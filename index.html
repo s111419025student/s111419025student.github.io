@@ -2,91 +2,53 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
+    <title>0930-網頁設計課程</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的網站首頁</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
-        body {
-            font-family: 'Orbitron', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%);
-            color: #00fff7;
-            min-height: 100vh;
-        }
-        header {
-            background: rgba(20, 20, 40, 0.95);
-            color: #00fff7;
-            padding: 2em 2em 1em 2em;
-            box-shadow: 0 4px 30px rgba(0,255,247,0.2);
-            border-bottom: 2px solid #00fff7;
-        }
-        h1 {
-            letter-spacing: 2px;
-            font-size: 2.5em;
-            text-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
-        }
-        nav a {
-            color: #00fff7;
-            margin: 0 1.5em;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 0.5em 1em;
-            border-radius: 30px;
-            transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-            box-shadow: 0 0 8px #00fff7 inset;
-        }
-        nav a:hover {
-            background: #00fff7;
-            color: #181c25;
-            box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7;
-        }
-        main {
-            padding: 3em 2em;
-            background: rgba(30, 40, 60, 0.85);
-            margin: 2em auto;
-            max-width: 700px;
-            border-radius: 20px;
-            box-shadow: 0 0 40px #00fff733;
-        }
-        h2 {
-            color: #00fff7;
-            text-shadow: 0 0 8px #00fff7;
-            border-bottom: 1px solid #00fff7;
-            padding-bottom: 0.5em;
-        }
-        p {
-            color: #e0f7fa;
-            font-size: 1.2em;
-            line-height: 1.8;
-        }
-        footer {
-            background: rgba(20, 20, 40, 0.95);
-            text-align: center;
-            padding: 1.5em;
-            margin-top: 3em;
-            color: #00fff7;
-            font-size: 1em;
-            letter-spacing: 1px;
-            border-top: 2px solid #00fff7;
-            box-shadow: 0 -4px 30px rgba(0,255,247,0.2);
-        }
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        header { background: #4a90e2; color: #fff; padding: 20px; border-radius: 8px; }
+        main { margin-top: 30px; }
+        footer { margin-top: 40px; color: #888; text-align: center; }
     </style>
 </head>
 <body>
     <header>
-        <h1>歡迎來到我的未來科技網站</h1>
-        <nav>
-            <a href="#">首頁</a>
-            <a href="#">關於我們</a>
-            <a href="#">聯絡方式</a>
-        </nav>
+        <h1>唐詩三百首</h1>
+        
     </header>
     <main>
-        <h2>網站簡介</h2>
-        <p>這是一個充滿未來科技感的 HTML 首頁範例。你可以在這裡展示你的創新內容，讓訪客感受科技的魅力。</p>
+        <p>賈島 尋隱者不遇</p>
+        松下問童子，言師採藥去。<br>
+        只在此山中，雲深不知處。<br>
+        <br><br><br>
+        <p>靜夜思 李白</p>
+        床前明月光，疑似地上霜。<br>
+        舉頭望明月，低頭思故鄉。<br>
+        <br><br><br>
+        春曉 孟浩然<br>
+        春眠不覺曉，處處聞啼鳥。<br>
+        夜來風雨聲，花落知多少？<br>
+        <br><br><br>
+        八陣圖 杜甫<br>
+        功蓋三分國，名成八陣圖。<br>
+        江流石不轉，遺恨失吞吳。<br>
+        <br><br><br>
+        王維 相思<br>
+        紅豆生南國，春來發幾枝？<br>
+        願君多採摘，此物最相思。<br>
+        <table border="1" cellpadding="8" style="margin-top:20px; border-collapse:collapse;">
+            <tr>
+                <td> <p>賈島 尋隱者不遇</p>
+                松下問童子，言師採藥去。<br>
+                只在此山中，雲深不知處。<br>
+                </td>
+                <td><img src="pct1.png" alt="Italian Trulli">
+                </td>
+            </tr>
+        </table>
     </main>
     <footer>
-        &copy; 2025 未來科技網站
+        &copy; 2024 基本網站
     </footer>
 </body>
+</html>
