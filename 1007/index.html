@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表格 × 圖片練習</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    h1 { color: #2c3e50; }
+    .table-scroll { overflow-x: auto; }
+    table { border-collapse: collapse; min-width: 600px; width: 100%; margin-bottom: 2em; }
+    th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+    th { background: #f7f7f7; }
+    img { max-width: 480px; height: auto; display: block; margin: 0 auto 8px; }
+    .caption { font-size: 0.95em; color: #555; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>表格 × 圖片練習</h1>
+  <p>目標：熟悉 &lt;table&gt;、合併儲存格（colspan/rowspan）、替代文字（alt）、圖片大小與標題對齊。</p>
+  <div class="table-scroll">
+    <table>
+      <tr>
+        <th>分類</th>
+        <th>圖片</th>
+        <th>描述</th>
+        <th>日期</th>
+      </tr>
+      <tr>
+        <td rowspan="2">城市風景</td>
+        <td>
+          <img src="0022.jpg" alt="傍晚的河岸與城市天際線倒影">
+          <div class="caption">艾菲爾鐵塔</div>
+        </td>
+        <td>河畔夕照 金色陽光灑在河面，倒映城市天際線。</td>
+        <td>2025-09-01</td>
+      </tr>
+      <tr>
+        <td>
+          <img src="0033.jpg" alt="夜晚燈光點綴的街道與咖啡店">
+          <div class="caption">早上咖啡</div>
+        </td>
+        <td>夜色小徑 街角咖啡店透出溫暖光暈。</td>
+        <td>2025-09-02</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="background:#eaf6ff; font-weight:bold;">淨灘</td>
+      </tr>
+      <tr>
+        <td>淨灘</td>
+        <td>
+          <img src="0044.jpg" alt="沙灘、海浪與遠方的帆船">
+          <div class="caption">沙灘、海浪與遠方的油輪</div>
+        </td>
+        <td>清晨海浪 第一道陽光照亮浪花與沙粒。</td>
+        <td>2025-09-03</td>
+      </tr>
+    </table>
+  </div>
+  <p style="color:#888;font-size:0.9em;">小提示：圖片請使用相對路徑 images/檔名.png；若要更換圖片，把新檔案放進 images 資料夾並更新 src 與 alt。</p>
+</body>
+</html>
