@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>114 教學科技應用設計競賽</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #8e44ad;
+            --color-secondary: #3498db;
+            --color-accent: #e74c3c;
+            --color-text: #ffffff;
+            --color-bg-card: rgba(0, 0, 0, 0.35);
+            --color-border: rgba(255, 255, 255, 0.2);
+            --color-cta: #f1c40f;
+            --color-cta-text: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #4e54c8, #8f94fb, #e74c3c);
+            background-attachment: fixed;
+            color: var(--color-text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid var(--color-border);
+        }
+
+        /* --- Header & Hero --- */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px dashed var(--color-border);
+        }
+
+        header .sponsor {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        header .purpose {
+            font-size: 1.25rem;
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 15px 35px;
+            background: var(--color-cta);
+            color: var(--color-cta-text);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: transform 0.3s ease, background 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button-secondary {
+            background: #fff;
+            color: #333;
+        }
+
+        .button:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: #ffffff;
+        }
+        
+        .button-secondary:hover {
+            background: #f1c40f;
+            color: var(--color-cta-text);
+        }
+
+
+        /* --- Section Styling --- */
+        .section {
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--color-bg-card);
+            border-radius: 15px;
+            border: 1px solid var(--color-border);
+        }
+
+        .section h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--color-cta);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* --- Grid Layouts (Tracks, Prizes) --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .card p, .card li {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .card .special-note {
+            font-size: 0.9rem;
+            background: rgba(241, 196, 15, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid var(--color-cta);
+        }
+
+        /* --- Timeline & Lists --- */
+        ul.styled-list {
+            list-style: none;
+            padding-left: 10px;
+        }
+
+        ul.styled-list li {
+            position: relative;
+            font-size: 1.1rem;
+            padding: 10px 0 10px 30px;
+            border-bottom: 1px solid var(--color-border);
+        }
+        
+        ul.styled-list li:last-child {
+            border-bottom: none;
+        }
+
+        ul.styled-list li::before {
+            content: '⚡️';
+            position: absolute;
+            left: 0;
+            top: 10px;
+            font-size: 1.2rem;
+        }
+        
+        #timeline ul.styled-list li::before {
+            content: '🗓️';
+        }
+
+        /* --- Judging Criteria --- */
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .criteria-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px 20px;
+            border-radius: 10px;
+            border-top: 5px solid var(--color-cta);
+        }
+        
+        .criteria-item .percentage {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .criteria-item .item-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--color-border);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        footer p {
+            margin-bottom: 10px;
+        }
+
+
+        /* --- 放大 '誰可以參加' 的第一行 --- */
+#about .styled-list  {
+    font-size: 1.3rem; /* 原本是 1.1rem，您可以改成 1.4rem 或 20px 等 */
+}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+           <p class="sponsor">國立臺北教育大學教學發展中心 主辦 </p>
+            <h1>114 教學科技應用設計競賽 </h1>
+            <p class="purpose">
+            鼓勵你將數位科技(VR、AI、Apple工具)應用於教學現場 ，
+                設計具創新與實用性的教學應用 ，秀出你的數位內容創建能力！ 
+            </p>
+            <div class="cta-buttons">
+                <a href="https://forms.gle/Hs9SkDYpiAaB2J9p6" target="_blank" class="button">🚀 馬上報名</a>
+                <a href="https://forms.gle/PQ1AEJ1xBo3yRTZd6" target="_blank" class="button button-secondary">✉️ 繳交作品</a>
+            </div>
+        </header>
+
+        <main>
+            <section id="about" class="section">
+                <h2>🎯 誰可以參加？</h2>
+                <ul class="styled-list">
+                    [rule 1]<li><strong>參賽對象：</strong> 國立臺北教育大學在學學生 (含學士班、碩士班、碩士在職專班) 。</li>
+                    [rule 2]<li><strong>團隊人數：</strong> 1至4人組成一隊 。</li>
+                    [rule 3]<li><strong>指導老師：</strong> 可以邀請1名老師擔任團隊指導老師 。</li>
+                    [rule 4]<li><strong>作品限制：</strong> 每位學生最多可報名2件作品 ，但同一作品不得重複投件於不同類別 。</li>
+                </ul>
+
+
+
+            </section>
+
+            <section id="tracks" class="section">
+                <h2>💡 競賽組別 (共三類)</h2>
+                <div class="grid">
+                    <div class="card">
+                         <h3>(一) Uptale VR 教學應用設計組 </h3>
+                        <p>
+                            設計沉浸式教學場景 ，內容可包含國小課程教材、教育議題 ，或與真實情境有關的教學應用 ，展現VR教學潛能 。
+                        </p>
+                        <p class="special-note">
+                           <strong>[專屬福利]</strong> 報名此組別後，將以Email通知並開通競賽用 Uptale VR 帳號 。
+                        </p>
+                    </div>
+                    <div class="card">
+                       <h3>(二) AI 小工具教學創新應用組</h3>
+                        <p>
+                            發展 AI 工具 (如 ChatGPT、生成式 AI [cite: 17]、學習分析工具等) 於教學現場的應用 ，用以解決學習難題或提升學習成效 。
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>(三) Apple 教育應用設計組 </h3>
+                        <p>
+                            <strong>教案設計：</strong> 結合 iPad、Mac 等 Apple 生態系工具的數位教學設計 。
+                        </p>
+                        <p>
+                            <strong>應用程式設計：</strong> 自行開發或利用 Swift/Swift Playgrounds 等進行教育應用創作 。
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="timeline" class="section">
+                <h2>🗓️ 重要時程</h2>
+                <ul class="styled-list">
+                   <li><strong>競賽報名：</strong> 即日起至 114 年 11 月 7 日 (五) 截止 。</li>
+                    <li><strong>繳件時間：</strong> 即日起至 114 年 12 月 14 日 (日) 截止 。</li>
+                   <li><strong>名單公布：</strong> 預計 115 年 1 月底於「教學發展中心」網頁公布 ，並以 Email 或電話通知 。</li>
+                </ul>
+            </section>
+
+            <section id="prizes" class="section">
+              <h2>🏆 競賽獎勵 (各類別分別設置) </h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>特優 (1件) </h3>
+                        <p>獎金 新台幣 8,000 元 </p>
+                       <p>每人獎狀 1 張 </p>
+                    </div>
+                    <div class="card">
+                       <h3>優選 (1件)</h3>
+                        <p>獎金 新台幣 5,000 元 </p>
+                        <p>每人獎狀 1 張 </p>
+                    </div>
+                    <div class="card">
+                        <h3>佳作 (2件) </h3>
+                        <p>獎金 新台幣 2,000 元 </p>
+                        <p>每人獎狀 1 張 </p>
+                    </div>
+                </div>
+                <p style="margin-top: 20px; text-align: center; font-style: italic; color: rgba(255,255,255,0.8);">
+                   註：主辦方得視參賽件數或作品水準調整獲獎情形，名次得調整或從缺 。
+                </p>
+            </section>
+
+            <section id="judging" class="section">
+                <h2>📊 評審標準</h2>
+                <div class="criteria-grid">
+                    <div class="criteria-item">
+                        <div class="percentage">40%</div>
+                        <div class="item-name">完整性 </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="percentage">30%</div>
+                        <div class="item-name">創意表現及互動應用 </div>
+                    </div>
+                    <div class="criteria-item">
+                        <div class="percentage">30%</div>
+                       <div class="item-name">實踐效益及未來延展性 </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="submission" class="section">
+                <h2>📤 報名與繳件</h2>
+                <ul class="styled-list">
+                    <li><strong>競賽報名 ：</strong> 採網路線上報名 。報名網址： <a href="https://forms.gle/Hs9SkDYpiAaB2J9p6" target="_blank" style="color: var(--color-cta); font-weight: bold;">https://forms.gle/Hs9SkDYpiAaB2J9p6</a> </li>
+                    <li><strong>繳件方式 ：</strong> 將所有資料壓縮為 .zip 檔 上傳至： <a href="https://forms.gle/PQ1AEJ1xBo3yRTZd6" target="_blank" style="color: var(--color-cta); font-weight: bold;">https://forms.gle/PQ1AEJ1xBo3yRTZd6</a> </li>
+                    <li><strong>檔案命名：</strong> <code>編號_團隊名_作品名_檔名</code> (壓縮檔) 。</li>
+                </ul>
+                
+                <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 1.5rem;">📬 繳件資料清單 </h3>
+                <div class="grid">
+                    <div class="card">
+                        <p><strong>1. 計畫書 (PDF) ：</strong> 需包含競賽組別、作品名稱、團隊介紹、創作理念、教學目標、教學內容規劃、預期成效 。</p>
+                    </div>
+                    <div class="card">
+                        <p><strong>2. 成品 ：</strong> 如 Uptale VR 成品、AI 工具 Demo、Apple 教案或應用程式原型 。</p>
+                    </div>
+                    <div class="card">
+                        <p><strong>3.作品導覽影片 (mp4) ：</strong> 10分鐘內 ，HD 1080P ，上傳至 Youtube 並提供連結 。</p>
+                    </div>
+                    <div class="card">
+                        <p><strong>4. 授權書 ：</strong> 個人資料保護聲明暨數位內容授權書 。</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>主辦單位：國立臺北教育大學教學發展中心 </p>
+            <p>
+                注意事項：參賽作品需為自行創作 ，若使用非原創素材須註明來源。
+                主辦單位擁有為推廣活動及教育目的之重製、修改及公開展示等權利 。
+            </p>
+            <p>經費來源：教育部高教深耕計畫 </p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
