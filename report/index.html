@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VS Code AI 輔助開發工具評估報告 | 互動式導覽</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; color: #334155; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        .code-block { font-family: 'Consolas', 'Monaco', monospace; background-color: #1e293b; color: #e2e8f0; }
+        .active-tab { border-bottom: 2px solid #3b82f6; color: #1d4ed8; font-weight: 600; }
+        .step-active { background-color: #eff6ff; border-left: 4px solid #3b82f6; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Choose Palette: Tech Calm (Warm Neutrals + VS Code Blue) -->
+    <!-- Application Structure Plan: 
+         1. Header: Report Title & Context.
+         2. Navigation: Tab-based switching for "Tool Comparison", "Dev Workflow", "Live Demo", "Summary".
+         3. Section 1 (Tools): Radar Chart comparing tools based on qualitative report data + Info Cards.
+         4. Section 2 (Workflow): Interactive Stepper illustrating the 4 stages (Structure, Style, Logic, Debug) with "Prompt -> Result" simulation.
+         5. Section 3 (Demo): Live rendering of the AI-generated Todo List code mentioned in the report.
+         6. Section 4 (Analysis): Limitations cards and conclusion text.
+    -->
+    <!-- Visualization & Content Choices:
+         1. Tool Comparison -> Goal: Compare -> Radar Chart (Chart.js) -> Shows relative strengths (Privacy vs Features vs Cost).
+         2. Workflow Stages -> Goal: Inform/Change -> Interactive Accordion/Stepper -> Clicking a stage updates the code preview panel.
+         3. Demo -> Goal: Engage -> Embedded "App within App" -> Renders the HTML/CSS/JS from the report to prove the concept.
+         4. NO SVG/Mermaid used. Unicode icons used for visual cues.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-800">VS Code AI 工具評估報告</h1>
+                <p class="text-sm text-slate-500 hidden md:block">暨網頁開發能力深度解析 | 2025年12月21日</p>
+            </div>
+            <nav class="flex space-x-1 md:space-x-4 text-sm md:text-base">
+                <button onclick="switchTab('tools')" id="tab-tools" class="px-3 py-2 active-tab transition-colors">工具比較</button>
+                <button onclick="switchTab('workflow')" id="tab-workflow" class="px-3 py-2 text-slate-500 hover:text-slate-700 transition-colors">開發流程</button>
+                <button onclick="switchTab('demo')" id="tab-demo" class="px-3 py-2 text-slate-500 hover:text-slate-700 transition-colors">實戰演示</button>
+                <button onclick="switchTab('summary')" id="tab-summary" class="px-3 py-2 text-slate-500 hover:text-slate-700 transition-colors">結論與限制</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+
+        <!-- Intro Text -->
+        <div id="intro-section" class="mb-8 p-6 bg-white rounded-lg shadow-sm border border-slate-100">
+            <h2 class="text-lg font-semibold mb-2">💡 AI 驅動的開發新時代</h2>
+            <p class="text-slate-600 leading-relaxed">
+                本互動報告旨在解析 VS Code 生態系中的主流 AI 工具。對於網頁開發者而言，AI 不再只是「修正錯誤」的輔助角色，而是能參與「從零到一」建構過程的智慧夥伴。
+                請透過上方分頁探索不同主題。
+            </p>
+        </div>
+
+        <!-- Section 1: Tool Comparison -->
+        <div id="view-tools" class="view-section fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Chart Column -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-xl font-bold mb-4 text-center">主流工具綜合評估</h3>
+                    <p class="text-sm text-slate-500 mb-6 text-center">
+                        基於報告內容的定性分析數據化呈現。<br>
+                        <span class="text-xs">(積分僅供參考：整合度、成本效益、隱私安全、對話能力)</span>
+                    </p>
+                    <div class="chart-container">
+                        <canvas id="toolsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Details Column -->
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold mb-4 px-2">工具詳情</h3>
+                    
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="highlightTool(0)">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-lg text-slate-800">GitHub Copilot</h4>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">業界標準</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-2">
+                            <strong>核心：</strong> OpenAI GPT-4 系列<br>
+                            <strong>特點：</strong> 生態系最完整，支援 Copilot Chat 與 Inline Chat。<br>
+                            <strong>適用性：</strong> 全能型，特別擅長通用程式語言與熱門框架。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-purple-500 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="highlightTool(1)">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-lg text-slate-800">Codeium</h4>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">高CP值</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-2">
+                            <strong>優勢：</strong> 提供對個人開發者免費的高品質方案。速度極快。<br>
+                            <strong>適用性：</strong> 預算有限的開發者或學生首選。
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg border-l-4 border-green-500 shadow-sm hover:shadow-md transition-shadow cursor-pointer" onclick="highlightTool(2)">
+                        <div class="flex justify-between items-start">
+                            <h4 class="font-bold text-lg text-slate-800">Tabnine</h4>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">隱私專注</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-2">
+                            <strong>核心：</strong> 混合雲端與本地模型。<br>
+                            <strong>特點：</strong> 強調數據隱私，可訓練企業私有模型。<br>
+                            <strong>適用性：</strong> 對代碼隱私極度敏感的企業環境。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Workflow Analysis -->
+        <div id="view-workflow" class="view-section hidden fade-in">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold mb-2">AI 賦能的網頁製作四階段</h3>
+                <p class="text-slate-600">以 GitHub Copilot 為例，點擊下方步驟查看 AI 如何改變開發流程。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Steps Navigation -->
+                <div class="md:col-span-4 space-y-2">
+                    <button onclick="setWorkflowStep(1)" id="step-btn-1" class="w-full text-left p-4 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-all step-active group">
+                        <div class="font-bold text-slate-700 group-hover:text-blue-600">階段一：結構生成</div>
+                        <div class="text-xs text-slate-500 mt-1">HTML/JSX Scaffolding</div>
+                    </button>
+                    <button onclick="setWorkflowStep(2)" id="step-btn-2" class="w-full text-left p-4 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-all group">
+                        <div class="font-bold text-slate-700 group-hover:text-blue-600">階段二：樣式設計</div>
+                        <div class="text-xs text-slate-500 mt-1">CSS/Styling</div>
+                    </button>
+                    <button onclick="setWorkflowStep(3)" id="step-btn-3" class="w-full text-left p-4 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-all group">
+                        <div class="font-bold text-slate-700 group-hover:text-blue-600">階段三：互動邏輯</div>
+                        <div class="text-xs text-slate-500 mt-1">JavaScript/TypeScript</div>
+                    </button>
+                    <button onclick="setWorkflowStep(4)" id="step-btn-4" class="w-full text-left p-4 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 transition-all group">
+                        <div class="font-bold text-slate-700 group-hover:text-blue-600">階段四：除錯與解釋</div>
+                        <div class="text-xs text-slate-500 mt-1">Debugging</div>
+                    </button>
+                </div>
+
+                <!-- Dynamic Content Display -->
+                <div class="md:col-span-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-full flex flex-col">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                            <span class="font-mono text-sm font-bold text-slate-600" id="workflow-title">結構生成演示</span>
+                            <span class="text-xs bg-slate-200 px-2 py-1 rounded text-slate-500">AI Interaction Simulation</span>
+                        </div>
+                        
+                        <div class="p-6 flex-grow flex flex-col gap-4">
+                            <!-- Scenario -->
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <h5 class="text-blue-800 font-bold text-sm mb-1">📝 使用者情境 (Prompt)</h5>
+                                <p class="text-slate-700 italic text-sm" id="workflow-prompt">「幫我用 React 和 Tailwind CSS 寫一個現代化的著陸頁...」</p>
+                            </div>
+
+                            <!-- Action/Benefit -->
+                            <div class="flex items-center gap-4">
+                                <div class="flex-grow h-px bg-slate-200"></div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">AI Output</span>
+                                <div class="flex-grow h-px bg-slate-200"></div>
+                            </div>
+
+                            <!-- Code/Result -->
+                            <div class="code-block p-4 rounded-lg text-xs md:text-sm overflow-x-auto flex-grow relative group">
+                                <pre><code id="workflow-code">Loading...</code></pre>
+                            </div>
+
+                            <!-- Benefit Tag -->
+                            <div class="text-right">
+                                <span class="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold" id="workflow-benefit">
+                                    🚀 節省 80% 打字時間
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Live Demo -->
+        <div id="view-demo" class="view-section hidden fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
+                <!-- Explanation Side -->
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">實戰範例：5分鐘生成待辦清單</h3>
+                        <p class="text-slate-600 mb-4">
+                            這展示了報告中提到的「單一 Prompt 生成完整應用」的能力。
+                            右側是實際運行中的程式碼結果。
+                        </p>
+                    </div>
+                    
+                    <div class="bg-slate-800 text-slate-300 p-4 rounded-lg font-mono text-sm shadow-inner">
+                        <div class="text-slate-500 mb-2 border-b border-slate-700 pb-2">User Prompt:</div>
+                        <p>"Create a simple Todo List app using HTML, CSS, and JavaScript in a single file. It should allow adding tasks, clicking to mark as done, and a delete button."</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg border border-slate-200">
+                        <h4 class="font-bold text-slate-800 mb-2">✨ 觀察重點</h4>
+                        <ul class="list-disc list-inside text-sm text-slate-600 space-y-2">
+                            <li><strong>CSS 樣式：</strong> 自動生成了乾淨、現代的陰影與圓角設計。</li>
+                            <li><strong>互動邏輯：</strong> 自動綁定了 Enter 鍵或點擊按鈕的新增事件。</li>
+                            <li><strong>DOM 操作：</strong> 正確處理了元素的建立與刪除。</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Live App Container -->
+                <div class="bg-slate-100 p-4 rounded-xl border border-slate-300 flex flex-col justify-center items-center min-h-[400px]">
+                    <!-- Added User Image: VS Code Screenshot -->
+                    <div class="w-full max-w-sm mb-4">
+                        <p class="text-xs text-slate-500 font-bold mb-2 uppercase tracking-wide">開發預覽 (Screenshot)</p>
+                        <img src="image_a5f343.png" alt="VS Code 實戰截圖" class="w-full h-auto rounded-lg shadow-md border border-slate-200 object-cover" onerror="this.style.display='none'">
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="w-full max-w-sm flex items-center gap-2 mb-4 text-slate-400">
+                        <div class="h-px bg-slate-300 flex-1"></div>
+                        <span class="text-xs">⬇️ 生成結果 (Live App) ⬇️</span>
+                        <div class="h-px bg-slate-300 flex-1"></div>
+                    </div>
+
+                    <!-- This container simulates the iframe/preview result -->
+                    <div id="demo-app-root" class="w-full max-w-sm bg-white rounded-lg shadow-xl overflow-hidden transform transition-all hover:scale-[1.01]">
+                        <!-- Dynamic content injected here via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Summary & Limitations -->
+        <div id="view-summary" class="view-section hidden fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <!-- Limitation Cards -->
+                <div class="bg-amber-50 border border-amber-200 p-6 rounded-xl">
+                    <div class="text-3xl mb-4">😵‍💫</div>
+                    <h4 class="font-bold text-amber-800 text-lg mb-2">幻覺 (Hallucination)</h4>
+                    <p class="text-sm text-amber-900 opacity-80">
+                        AI 有時會捏造不存在的 CSS 屬性或過時語法。開發者仍需具備基本的判讀能力，不能完全盲信。
+                    </p>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-200 p-6 rounded-xl">
+                    <div class="text-3xl mb-4">🧠</div>
+                    <h4 class="font-bold text-indigo-800 text-lg mb-2">上下文限制</h4>
+                    <p class="text-sm text-indigo-900 opacity-80">
+                        對於極其龐大的專案，AI 可能無法理解所有檔案關聯，導致生成代碼與舊邏輯衝突。
+                    </p>
+                </div>
+
+                <div class="bg-red-50 border border-red-200 p-6 rounded-xl">
+                    <div class="text-3xl mb-4">🔒</div>
+                    <h4 class="font-bold text-red-800 text-lg mb-2">安全性隱憂</h4>
+                    <p class="text-sm text-red-900 opacity-80">
+                        切勿將 API Key 或敏感密碼貼給 AI。雖然企業版有隱私保護，但應養成良好資安習慣。
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">結論：質的飛躍</h3>
+                <p class="text-slate-600 max-w-2xl mx-auto mb-8 text-lg">
+                    在 VS Code 中引入 AI 工具大幅降低了記憶語法的負擔，讓開發者能更專注於<strong>產品邏輯</strong>與<strong>使用者體驗</strong>。
+                    對於初學者是最好的導師，對於資深工程師則是高效的結對編程夥伴。
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button onclick="switchTab('tools')" class="bg-slate-800 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition-colors font-semibold">
+                        回顧工具比較
+                    </button>
+                    <button onclick="switchTab('demo')" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold shadow-lg shadow-blue-200">
+                        試玩實戰範例
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 py-6 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>Generated Interactive Report based on "VS Code AI 工具評估報告"</p>
+        </div>
+    </footer>
+
+    <script>
+        // State Management
+        const state = {
+            currentTab: 'tools',
+            currentStep: 1,
+            todoList: []
+        };
+
+        // Data for Workflow Section
+        const workflowData = {
+            1: {
+                title: "階段一：結構生成 (Scaffolding)",
+                prompt: "「幫我用 React 和 Tailwind CSS 寫一個現代化的著陸頁，包含導航列、英雄區塊...」",
+                code: `// AI 生成結果示意
+<nav className="flex justify-between p-4 bg-white shadow">
+  <div className="font-bold text-xl">MyBrand</div>
+  <ul className="flex space-x-4">
+    <li>Home</li><li>Features</li><li>Pricing</li>
+  </ul>
+</nav>
+<section className="hero bg-blue-600 text-white py-20 text-center">
+  <h1 className="text-4xl font-bold">歡迎來到未來</h1>
+  <button className="mt-6 bg-white text-blue-600 px-6 py-2 rounded">
+    立即註冊
+  </button>
+</section>`,
+                benefit: "🚀 節省 80% 打字時間"
+            },
+            2: {
+                title: "階段二：樣式設計 (Styling)",
+                prompt: "「讓這個按鈕在滑鼠懸停時有漂浮起來的動畫效果，並加上藍色的光暈陰影。」",
+                code: `/* AI 自動補全 CSS class 或樣式 */
+.btn-hover-effect {
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-hover-effect:hover {
+  transform: translateY(-2px); /* 漂浮效果 */
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.5); /* 藍色光暈 */
+}`,
+                benefit: "🎨 解決 CSS 屬性記憶痛點"
+            },
+            3: {
+                title: "階段三：互動邏輯 (Logic)",
+                prompt: "「為這個 Email 輸入框添加驗證邏輯：必須包含 @ 符號，且域名不能是免費信箱...」",
+                code: `const validateEmail = (email) => {
+  // AI 生成的正則表達式
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regex.test(email)) return "格式錯誤";
+  
+  // AI 理解 "免費信箱" 的邏輯
+  const freeDomains = ['gmail.com', 'yahoo.com', 'hotmail.com'];
+  const domain = email.split('@')[1];
+  if (freeDomains.includes(domain)) {
+    return "請使用公司信箱";
+  }
+  return "驗證通過";
+};`,
+                benefit: "🧠 自動生成複雜邏輯與 Regex"
+            },
+            4: {
+                title: "階段四：除錯與解釋 (Debugging)",
+                prompt: "「選取錯誤訊息：useEffect dependency missing... Copilot: Explain This」",
+                code: `// Copilot Fix 建議:
+useEffect(() => {
+  fetchData(userId);
+}, [userId]); // <--- AI 自動幫你補上了遺漏的依賴項
+
+// 解釋: 
+// "React Hook useEffect has a missing dependency: 'userId'. 
+// Either include it or remove the dependency array."`,
+                benefit: "🐞 快速定位並修復 Bugs"
+            }
+        };
+
+        // Navigation Logic
+        function switchTab(tabId) {
+            // Update State
+            state.currentTab = tabId;
+
+            // Update UI: Tabs
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "px-3 py-2 text-slate-500 hover:text-slate-700 transition-colors";
+            });
+            document.getElementById(`tab-${tabId}`).className = "px-3 py-2 active-tab transition-colors";
+
+            // Update UI: Content Views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+            // Trigger animations or initializations specific to tab
+            if (tabId === 'demo') {
+                initDemoApp();
+            }
+        }
+
+        // Workflow Step Logic
+        function setWorkflowStep(stepId) {
+            state.currentStep = stepId;
+            
+            // Update Buttons
+            document.querySelectorAll('[id^="step-btn-"]').forEach(btn => {
+                btn.classList.remove('step-active', 'bg-blue-50', 'border-l-4', 'border-blue-500');
+                btn.classList.add('bg-white');
+            });
+            const activeBtn = document.getElementById(`step-btn-${stepId}`);
+            activeBtn.classList.add('step-active');
+
+            // Update Content
+            const data = workflowData[stepId];
+            document.getElementById('workflow-title').innerText = data.title;
+            document.getElementById('workflow-prompt').innerText = data.prompt;
+            document.getElementById('workflow-code').innerText = data.code;
+            document.getElementById('workflow-benefit').innerText = data.benefit;
+        }
+
+        // Chart.js Initialization
+        function initChart() {
+            const ctx = document.getElementById('toolsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['整合度 (Integration)', 'CP值 (Cost)', '隱私安全 (Privacy)', '回應速度 (Speed)', '生態系 (Eco)'],
+                    datasets: [
+                        {
+                            label: 'GitHub Copilot',
+                            data: [10, 6, 7, 8, 10],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                        },
+                        {
+                            label: 'Codeium',
+                            data: [8, 10, 7, 9, 8],
+                            backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                            borderColor: 'rgba(168, 85, 247, 1)',
+                            pointBackgroundColor: 'rgba(168, 85, 247, 1)',
+                        },
+                        {
+                            label: 'Tabnine',
+                            data: [8, 7, 10, 7, 7],
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            pointLabels: {
+                                font: { size: 12, family: "'Noto Sans TC', sans-serif" },
+                                color: '#64748b'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 10
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function highlightTool(index) {
+            // Optional: Could trigger chart dataset highlight
+            // For now, it's a visual interaction on the cards
+        }
+
+        // Demo App Simulation (The Todo List)
+        function initDemoApp() {
+            const root = document.getElementById('demo-app-root');
+            if (root.innerHTML.trim() !== '') return; // Prevent re-render
+
+            // Injecting the exact structure inspired by the report's example
+            root.innerHTML = `
+                <div class="bg-white h-full flex flex-col font-sans text-slate-700">
+                    <div class="bg-blue-600 p-4 text-white">
+                        <h2 class="text-lg font-bold">待辦事項 (AI Generated)</h2>
+                    </div>
+                    <div class="p-4 bg-slate-50 border-b border-slate-200">
+                        <div class="flex gap-2">
+                            <input type="text" id="sim-input" class="flex-1 p-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="輸入新事項...">
+                            <button id="sim-add" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">新增</button>
+                        </div>
+                    </div>
+                    <ul id="sim-list" class="flex-1 overflow-y-auto p-0 m-0">
+                        <li class="flex justify-between items-center p-3 border-b border-slate-100 bg-white">
+                            <span onclick="this.parentElement.classList.toggle('opacity-50');this.parentElement.classList.toggle('line-through');" class="cursor-pointer">學習 VS Code AI 工具</span>
+                            <button onclick="this.parentElement.remove()" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded text-sm">刪除</button>
+                        </li>
+                         <li class="flex justify-between items-center p-3 border-b border-slate-100 bg-white opacity-50 line-through">
+                            <span onclick="this.parentElement.classList.toggle('opacity-50');this.parentElement.classList.toggle('line-through');" class="cursor-pointer">安裝 GitHub Copilot</span>
+                            <button onclick="this.parentElement.remove()" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded text-sm">刪除</button>
+                        </li>
+                    </ul>
+                    <div class="p-2 text-center text-xs text-slate-400 bg-slate-50">
+                        點擊文字完成，點擊按鈕刪除
+                    </div>
+                </div>
+            `;
+
+            // Attach Logic (Vanilla JS similar to report example)
+            const input = document.getElementById('sim-input');
+            const btn = document.getElementById('sim-add');
+            const list = document.getElementById('sim-list');
+
+            function addTask() {
+                if(!input.value.trim()) return;
+                const li = document.createElement('li');
+                li.className = "flex justify-between items-center p-3 border-b border-slate-100 bg-white slide-in";
+                li.innerHTML = `
+                    <span class="cursor-pointer select-none text-slate-700">${input.value}</span>
+                    <button class="text-red-500 hover:bg-red-50 px-2 py-1 rounded text-sm transition-colors">刪除</button>
+                `;
+                
+                // Add Event Listeners dynamically
+                const span = li.querySelector('span');
+                span.addEventListener('click', () => {
+                    li.classList.toggle('opacity-50');
+                    li.classList.toggle('line-through');
+                    li.classList.toggle('bg-slate-50');
+                });
+
+                const delBtn = li.querySelector('button');
+                delBtn.addEventListener('click', () => {
+                    li.remove();
+                });
+
+                list.appendChild(li);
+                input.value = '';
+                
+                // Scroll to bottom
+                list.scrollTop = list.scrollHeight;
+            }
+
+            btn.addEventListener('click', addTask);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask();
+            });
+        }
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initChart();
+            setWorkflowStep(1); // Set initial workflow step
+        });
+
+    </script>
+</body>
+</html>
